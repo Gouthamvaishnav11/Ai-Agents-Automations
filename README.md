@@ -65,7 +65,7 @@
 | Looks        | Text          | Description of user's appearance  |
 | Profession   | Text          | User's profession                 |
 | Rating       | Number        | Popularity score of profession    |
-| User Sentiment Choice         | Single Select |Sentiment   (optional)              |
+| User Sentiment Choice         | Single Select |              |
 | Poem         | Long Text     | Generated poem                    |
 
 
