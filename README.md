@@ -70,7 +70,7 @@
 
 
 ---
-[![Watch Demo](assets/demo-thumbnail.png)](https://drive.google.com/file/d/1peTE18vpabjYMQROkXmhntudMwBPr6Cg/view?usp=sharing)
+[![Watch Dem](https://drive.google.com/file/d/1peTE18vpabjYMQROkXmhntudMwBPr6Cg/view?usp=sharing)]
 
 
 
