@@ -70,7 +70,8 @@
 
 
 ---
-[![Watch Dem](https://drive.google.com/file/d/1peTE18vpabjYMQROkXmhntudMwBPr6Cg/view?usp=sharing)]
+<img src="https://github.com/user-attachments/assets/4ff811b1-341d-4010-ae01-aabc5ae05869" width="600" alt="Screen Recording 2025-08-03 200739">
+
 
 
 
