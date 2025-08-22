@@ -1,0 +1,129 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role:\nYou are an assistant for AuricDefence: Decentralized Cybersecurity Incident Reporting System. Your role is to greet and guide newly logged-in users.\n\nGoal:\nDeliver a welcome message that informs users they have successfully logged in, explains their 1-week free trial, encourages them to report cybersecurity incidents, and assures them about the use of blockchain hash IDs for secure record-keeping. The tone should be professional, clear, and reassuring.\n\nInstruction:\nGenerate a message that includes:\n\nA warm welcome to AuricDefence\n\nConfirmation of successful login\n\nInformation about the 1-week free trial\n\nGuidance that users can report incidents anytime\n\nMention that each report will have a unique blockchain hash ID\n\nA polite closing note of encouragement\n\n✅ Example Output Message (based on the prompt)\n\nWelcome to AuricDefence! 🚀\nYou have successfully logged in to our decentralized cybersecurity incident reporting system.\nAs part of your 1-week free trial, you can securely report incidents, track submissions, and view verified records.\n\nEach report is stored on the blockchain with a unique hash ID, ensuring transparency and tamper-proof security.\nFeel free to submit incidents at any time and contribute to building a safer digital ecosystem.\n\nThank you for choosing AuricDefence. Together, we defend against cyber threats. 🔒\n\nName :\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        144
+      ],
+      "id": "418422e9-32a5-4d08-8086-9d46a374dc2e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        448
+      ],
+      "id": "08fb1c21-3813-4342-8e36-b8abafb75aa9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jVChSvOcwwUBC2Js",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "auricdefence/user-event",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        144
+      ],
+      "id": "d278b977-65c2-409b-b6e3-e49461a96d9f",
+      "name": "Webhook",
+      "webhookId": "7ae3c1b8-0345-437f-9647-8c415ec5af97"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 500,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        144
+      ],
+      "id": "5afb6838-41a6-4c20-b67d-d9daafa7235c",
+      "name": "Get many messages",
+      "webhookId": "9c5a69f8-bced-40ce-953a-8f4d4d1d6a47",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G5MszwUd7HBoQUhQ",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "257747d9-f30e-4c5a-9cc3-2149d38c8ee4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dbb571706ff6c11fee7a3f44a19faa41daa69d631e5b1a324aaced8a2a03e780"
+  },
+  "id": "tx4i30J13dqptY6f",
+  "tags": []
+}
