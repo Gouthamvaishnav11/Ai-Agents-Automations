@@ -76,3 +76,7 @@ Cusotmer Feedback:
 
 <img width="1461" height="687" alt="image" src="https://github.com/user-attachments/assets/59f599f1-dd46-4d64-8797-d338f72a9400" />
 
+Gmail reply Automation:
+<img width="1452" height="536" alt="image" src="https://github.com/user-attachments/assets/654836c4-c4ed-4515-99b5-865e464718d7" />
+
+
