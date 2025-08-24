@@ -79,4 +79,8 @@ Cusotmer Feedback:
 Gmail reply Automation:
 <img width="1452" height="536" alt="image" src="https://github.com/user-attachments/assets/654836c4-c4ed-4515-99b5-865e464718d7" />
 
+Auricdefence incident report sloution :
+<img width="1483" height="336" alt="image" src="https://github.com/user-attachments/assets/3d4a3f68-41ae-4a9e-aa4c-2adb8fe31a9d" />
+
+
 
