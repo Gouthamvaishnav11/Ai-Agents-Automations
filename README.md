@@ -79,7 +79,19 @@ Cusotmer Feedback:
 Gmail reply Automation:
 <img width="1452" height="536" alt="image" src="https://github.com/user-attachments/assets/654836c4-c4ed-4515-99b5-865e464718d7" />
 
-Auricdefence incident report sloution :
+Introducing My AI-Powered Incident Resolution Automation: “AuricDefence AI Agent”
+
+I’m excited to share a project I recently developed — an AI Agent Automation that streamlines incident reporting and resolution. Here’s how it works:
+
+User Submission: A user fills out a simple form with details like incident type, severity level, incident description (what happened step by step), name, and email.
+
+AI Analysis: The AI Agent reviews the incident type and description, then suggests a potential solution.
+
+Cybersecurity Team Review: The suggested solution is sent to the AuricDefence cybersecurity team for validation. The team can approve or reject the solution.
+
+User Notification: Once approved, the solution is sent directly to the user’s email in a clear, step-by-step format — converting JSON-based incident solutions into easy-to-follow instructions.
+
+This automation significantly reduces response time, ensures accuracy, and enhances the overall incident management process.
 <img width="1483" height="336" alt="image" src="https://github.com/user-attachments/assets/3d4a3f68-41ae-4a9e-aa4c-2adb8fe31a9d" />
 
 
