@@ -1,0 +1,304 @@
+{
+  "name": "event Ai agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Event Types ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "name of user ",
+              "placeholder": "enter the user name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Event Type ",
+              "placeholder": "what type Event :(ex: techical event , sport event )",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "8d8ca5d9-c659-4dcd-aa69-db6f2eff6693",
+      "name": "On form submission",
+      "webhookId": "e081a3c4-b7c8-49ee-9571-f0e8fd121986"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\n\n**Role:**\nYou are an Event Idea Assistant AI.\n\n**Goal:**\nGenerate creative, practical, and detailed event ideas based on the event type provided by the user:\n`{{ $json['Event Type '] }}`\n\n**Instructions:**\n\n1. Generate **exactly three unique event ideas** with catchy names.\n2. For each event idea:\n\n   * Provide a **short description**.\n   * Provide a **step-by-step plan** with 4 categories:\n\n     * `preparation`\n     * `promotion`\n     * `execution`\n     * `post_event`\n   * Score the event in 3 categories:\n\n     * `feasibility` (Low, Medium, High)\n     * `cost` (Low, Medium, High)\n     * `engagement` (Low, Medium, High)\n3. **Return ONLY valid JSON** in this exact structure (no extra text, no markdown, no explanations):\n\n```json\n{\n  \"event_ideas\": [\n    {\n      \"name\": \"Hackathon\",\n      \"description\": \"A coding marathon where students solve real-world problems in 24 hours.\",\n      \"plan\": {\n        \"preparation\": [\"...\"],\n        \"promotion\": [\"...\"],\n        \"execution\": [\"...\"],\n        \"post_event\": [\"...\"]\n      },\n      \"scores\": {\n        \"feasibility\": \"High\",\n        \"cost\": \"High\",\n        \"engagement\": \"Very High\"\n      }\n    },\n    {\n      \"name\": \"Quiz Bowl\",\n      \"description\": \"A fast-paced quiz competition testing technical knowledge.\",\n      \"plan\": {\n        \"preparation\": [\"...\"],\n        \"promotion\": [\"...\"],\n        \"execution\": [\"...\"],\n        \"post_event\": [\"...\"]\n      },\n      \"scores\": {\n        \"feasibility\": \"Medium\",\n        \"cost\": \"Low\",\n        \"engagement\": \"Medium\"\n      }\n    }\n  ]\n}\n```\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "d9fcdc4c-7dfa-4cf4-8b56-e165249f35cb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        176
+      ],
+      "id": "4c684300-5016-4d88-b0bf-ce8dd214865d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZUPSDsP4Q16pqfdT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appFWitgcM66gNsBP",
+          "mode": "list",
+          "cachedResultName": "AI Event Logger",
+          "cachedResultUrl": "https://airtable.com/appFWitgcM66gNsBP"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblLlGk0blAsThl9m",
+          "mode": "list",
+          "cachedResultName": "AI Events",
+          "cachedResultUrl": "https://airtable.com/appFWitgcM66gNsBP/tblLlGk0blAsThl9m"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Engagement": "={{ $json.Engagement }}",
+            "Cost": "={{ $json.Cost }}",
+            "Description": "={{ $json.Description }}",
+            "Event Type": "={{ $('On form submission').item.json['Event Type '] }}",
+            "Preparation": "={{ $json.Preparation }}",
+            "Promotion": "={{ $json.Promotion }}",
+            "Execution": "={{ $json.Execution }}",
+            "PostEvent": "={{ $json.PostEvent }}",
+            "Feasibility": "={{ $json.Feasibility }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Preparation",
+              "displayName": "Preparation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Promotion",
+              "displayName": "Promotion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Execution",
+              "displayName": "Execution",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "PostEvent",
+              "displayName": "PostEvent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Feasibility",
+              "displayName": "Feasibility",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cost",
+              "displayName": "Cost",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Engagement",
+              "displayName": "Engagement",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        496,
+        0
+      ],
+      "id": "d8cf6046-a754-48b6-bab5-dd8458e447f3",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "ZvPgJ17UbBT20VsZ",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\n\nconst updatedItems = allItems.map((item) => {\n  let raw = item.json.output;\n\n  // Remove ```json and ``` if present\n  raw = raw.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\n  const parsedData = JSON.parse(raw);\n  const event = parsedData.event_ideas[0];\n\n  return {\n    json: {\n      Name: event.name,\n      Description: event.description,\n      Preparation: Array.isArray(event.plan.preparation) \n        ? event.plan.preparation.join(\"\\n\") \n        : event.plan.preparation,\n      Promotion: Array.isArray(event.plan.promotion) \n        ? event.plan.promotion.join(\"\\n\") \n        : event.plan.promotion,\n      Execution: Array.isArray(event.plan.execution) \n        ? event.plan.execution.join(\"\\n\") \n        : event.plan.execution,\n      PostEvent: Array.isArray(event.plan.post_event) \n        ? event.plan.post_event.join(\"\\n\") \n        : event.plan.post_event,\n      Feasibility: event.scores.feasibility,\n      Cost: event.scores.cost,\n      Engagement: event.scores.engagement,\n    },\n  };\n});\n\nreturn updatedItems;\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "155e517c-0999-431c-abe4-c909ab6c9072",
+      "name": "Code in JavaScript",
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "31ab304a-43e0-4e1b-8990-0d944a28ef32",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ec7102e3ed88309c38c8b8636485b76977cb7cd92c078e588cb98c0eedc9d215"
+  },
+  "id": "8bet1q9faJ4Phn0N",
+  "tags": []
+}

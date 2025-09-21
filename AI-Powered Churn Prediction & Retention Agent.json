@@ -1,0 +1,451 @@
+{
+  "name": "AI-Powered Churn Prediction & Retention Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appPJWlzfeXErGhaS",
+          "mode": "list",
+          "cachedResultName": "Customer Success Suite",
+          "cachedResultUrl": "https://airtable.com/appPJWlzfeXErGhaS"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblMk9pj1M2Om67vL",
+          "mode": "list",
+          "cachedResultName": "Customers",
+          "cachedResultUrl": "https://airtable.com/appPJWlzfeXErGhaS/tblMk9pj1M2Om67vL"
+        },
+        "filterByFormula": "={Customer ID} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -912,
+        224
+      ],
+      "id": "c7289121-8122-479f-adc2-0d58cb78a844",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "vtMg3a240R6FXxDF",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role:\nYou are an AI assistant that predicts customer churn risk based on recent activity and suggests retention actions.\n\nGoal:\nAnalyze the customer’s activity data (last login, last purchase, support tickets, subscription details) and:\n\nPredict churn probability as a percentage (0–100%).\n\nClassify risk level as High / Medium / Low.\n\nSuggest the best retention action (email offer, discount, call, nurture campaign, etc.).\n\nInstructions:\nInput data will be provided in JSON format (from Airtable). Use the fields to estimate churn risk.\nReturn your output strictly in JSON format as follows:\n\n{\n  \"churn_probability\": \"number (0-100)\",\n  \"risk_level\": \"High/Medium/Low\",\n  \"retention_action\": \"string with recommendation\"\n}\n\nExample of Input Data (from Airtable)\n{\n  \"last_login_days\": 45,\n  \"last_purchase_days\": 90,\n  \"unresolved_tickets\": 2,\n  \"subscription_renewal_date\": \"2025-09-30\",\n  \"plan_type\": \"Basic\"\n}\nExample of Ai agent \n{\n  \"churn_probability\": {{$json[\"Last Login\"] > 30 ? 78 : 25}},\n  \"risk_level\": \"{{$json[\"Last Login\"] > 30 ? 'High' : 'Low'}}\",\n  \"retention_action\": \"{{$json[\"Last Login\"] > 30 ? 'Offer a 20% discount and schedule a sales call' : 'Add to nurture campaign'}}\"\n}\n\n\n\n\nBased on this customer data:\n- Last login: {{$json[\"Last Login\"]}} days ago\n- Last purchase: {{$json[\"Last Purchase\"]}} days ago\n- Unresolved tickets: {{$json[\"Unresolved Tickets\"]}}\n- Subscription renewal date: {{$json[\"Subscription Renewal Date\"]}}\n- Plan type: {{$json[\"Plan Type\"]}}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        224
+      ],
+      "id": "642dd80f-213f-430a-857d-2e413fa655d8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemma-3-12b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        400
+      ],
+      "id": "87fe6bec-e674-4d2b-a9cf-a0a16ac0b2ac",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZUPSDsP4Q16pqfdT",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nDear [Sales/Customer Success Team],\n\nWe have identified a *High Risk* customer who requires immediate attention:\n\nCustomer Name: \nCustomer ID / Email: {{ $json[\"customer_id\"] }}\nRisk Reason: {{ $json[\"reason\"] }} (e.g., inactivity, unresolved issues, recent complaints)\n\n*Suggested Action:* Please contact this customer immediately (call or email) to address their concerns and prevent churn.\n\n\n\n)\n\nThis is a priority task – timely intervention is critical to retain this customer.\n\nThank you,  \nCustomer Success / Sales Automation System\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        80
+      ],
+      "id": "569f80cd-416d-4337-947b-e3512fe392b9",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        48,
+        224
+      ],
+      "id": "57ff058b-c4d8-4456-be4d-70e6400cd34d",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "v5U5gevS1q8PKRpz",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        224
+      ],
+      "id": "89100295-2295-44b3-acec-053235c34997",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "emailType": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -944,
+        -544
+      ],
+      "id": "4728f780-34ea-4959-9885-60bc979f0919",
+      "name": "Send a message",
+      "webhookId": "8cb62415-e410-4339-8b9c-ef19a3aa61aa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GmTGOHj6FHduBZMc",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst parsedItems = items.map((item) => {\n  const rawOutput = item?.json?.output;\n  const cleanedString = rawOutput\n    .replace(\"```json\\n\", \"\")\n    .replace(\"\\n```\", \"\")\n    .trim();\n  const parsedJson = JSON.parse(cleanedString);\n  return { json: parsedJson };\n});\nreturn parsedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        224
+      ],
+      "id": "afc0bef5-fffe-47de-891c-fe7896b272dd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0d369334-1fe5-4eea-9008-41053e762bfe",
+              "leftValue": "={{ $json.risk_level }}",
+              "rightValue": "High",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "a92c5af4-0ac7-41fd-9989-f0624c185aa6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a1a4ca14-9b25-4de7-a2a9-a29b540a863a",
+              "leftValue": "={{ $json.risk_level }}",
+              "rightValue": "Medium",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        656
+      ],
+      "id": "438beb66-f3d3-4103-865c-9525c6d6bac8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09GG0VN2LU",
+          "mode": "list",
+          "cachedResultName": "cs-team-collaboration"
+        },
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        848,
+        320
+      ],
+      "id": "633585cb-4698-4d18-bc42-d5fbb8aa941b",
+      "name": "Send a message1",
+      "webhookId": "a38e9262-0c84-48c9-989a-8af48988ce38",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "gnGi443XD1l2Jd7J",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an assistant generating a Slack message for the Sales/Customer Success team.\n\nInput variables:\n- Customer Name: {{ $json[\"customer_name\"] }}\n- Customer ID / Email: {{ $json[\"customer_id\"] }}\n- Risk Reason: {{ $json[\"reason\"] }} (e.g., inactivity, unresolved issues)\n- Follow-up Deadline: {{ $json[\"follow_up_date\"] }}\n- CRM Link: {{ $json[\"crm_link\"] }}\n\nInstructions:\n- The customer is at *Medium Risk* of churn.\n- Create a professional, concise, actionable Slack message.\n- Include emojis to highlight risk.\n- Mention the customer name, reason, suggested action, and deadline.\n- Include a clickable link to the CRM record.\n\nOutput format (Slack-ready):\n⚠️ *Medium Risk Customer Alert* ⚠️\n\n\n{{ $('Search records').item.json.Name }}\n{{ $('Search records').item.json[\"Customer ID\"] }}\n{{ $('Search records').item.json.Email }}\n\n\n*Suggested Action:* Call or email the customer within 24 hours.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        320
+      ],
+      "id": "0aab82af-54bc-44f8-8627-8632dc884aa0",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        384,
+        528
+      ],
+      "id": "f31a4e0c-c891-40b2-9d21-34d79a986a81",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "v5U5gevS1q8PKRpz",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=gouthhamvaishnav9gmail.com",
+        "subject": "hwllo",
+        "emailType": "text",
+        "message": "hi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        464,
+        80
+      ],
+      "id": "55ec4b0d-4c73-418c-9f90-65be4ed99f01",
+      "name": "Send a message2",
+      "webhookId": "e0ca6b03-ab46-4249-8f3f-c363e85e1a2a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GmTGOHj6FHduBZMc",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d6e85e08-fc30-4ffe-9ad4-0d1835b20bbf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ec7102e3ed88309c38c8b8636485b76977cb7cd92c078e588cb98c0eedc9d215"
+  },
+  "id": "tRLVOB4LIQAu9fl9",
+  "tags": []
+}
