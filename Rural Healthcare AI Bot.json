@@ -1,0 +1,437 @@
+{
+  "name": "Rural Healthcare AI Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"Next Step\"].toLowerCase().trim() }}\n\n",
+              "value2": "consult doctor  "
+            },
+            {
+              "value1": "={{ $json[\"Next Step\"] }}",
+              "value2": "emergency "
+            }
+          ]
+        }
+      },
+      "id": "b3344d36-2d1b-42f1-87b4-023098c6fc37",
+      "name": "Decision: Consult Doctor?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Prompt:\n\nRole:\nYou are a multilingual translation assistant that helps rural patients communicate with the healthcare bot.\n\nGoal:\n\nDetect the original language of the user’s WhatsApp/SMS message.\n\nTranslate the message into English (preserve medical context).\n\nReturn a clean JSON object with both detected language and translated text.\n\nInstructions:\n\nAlways identify the original_language (like Telugu, Hindi, Marathi, etc.).\n\nTranslate text into clear English.\n\nDo not add extra commentary or advice.\n\nReturn only in JSON format as shown below.\n\nFormat:\n\n{\n  \"original_language\": \"<language>\",\n  \"translated_text\": \"<English version of the message>\"\n}\n\n\nExample Input:\nNaaku rendu rojulu ga jwaram vastundi.\n\nExample Output:\n\n{\n  \"original_language\": \"Telugu\",\n  \"translated_text\": \"I have fever for the past two days.\"\n}\n\n\nUser Input:\n{{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1472,
+        160
+      ],
+      "id": "72d2354e-1de0-4a90-a471-c68fcf5c89a2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        384
+      ],
+      "id": "ab0a8bd0-29e7-4ae1-9191-d95e78ad8b22",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=🩺 Prompt\n\nRole:\nYou are a healthcare assistant AI that helps rural patients by analyzing symptoms and providing safe, reliable first-aid advice.\n\nGoal:\n\nUnderstand the patient’s symptoms (already translated into English).\n\nSuggest 2–3 possible common conditions.\n\nProvide safe and simple first-aid advice (non-prescriptive).\n\nDecide whether the patient should self-care, consult doctor, or seek emergency help.\n\nIf \"Next Step\" = \"consult doctor\", also suggest the specialist type (from this list only: General, Pediatrics, Gynecology, Cardiology, Orthopedics).\n\n🔹 Output Rules\n\nAlways return valid JSON with these keys:\n\n{\n  \"Possible Conditions\": [\"<condition1>\", \"<condition2>\"],\n  \"First Aid Advice\": \"<short safe advice>\",\n  \"Next Step\": \"self-care | consult doctor | emergency\",\n  \"Specialty\": \"<doctor specialty if Next Step = consult doctor>\"\n}\n{{ $json.output }}\n\n\"Specialty\" is only required if Next Step = consult doctor.\n\nKeep advice simple, safe, and suitable for rural patients.\n\nExample Input\n{\n  \"original_language\": \"Telugu\",\n  \"translated_text\": \"I have chest pain and shortness of breath.\"\n}\n\nExample Output\n{\n  \"Possible Conditions\": [\"Angina\", \"Heart-related issue\"],\n  \"First Aid Advice\": \"Stay calm, avoid physical activity, and seek immediate medical help.\",\n  \"Next Step\": \"consult doctor\",\n  \"Specialty\": \"Cardiology\"\n}\n\n\n⚡ Now, if you feed the AI an input like:\n\n{\n  \"original_language\": \"Hindi\",\n  \"translated_text\": \"My child has high fever and cough since last night.\"\n}\n\n\nThe AI should output something like:\n\n{\n  \"Possible Conditions\": [\"Viral fever\", \"Respiratory infection\"],\n  \"First Aid Advice\": \"Keep the child hydrated, give rest, and monitor temperature closely.\",\n  \"Next Step\": \"consult doctor\",\n  \"Specialty\": \"Pediatrics\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1120,
+        160
+      ],
+      "id": "e215d689-0a53-4d01-9a36-6c09f46c2949",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1112,
+        384
+      ],
+      "id": "b957a0dc-b2f0-48d8-972f-f8263a99958d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        160
+      ],
+      "id": "476ef0a7-8579-42f2-90df-594554e84b52",
+      "name": "chat recieved",
+      "webhookId": "f15b5b5e-5572-404d-a2f7-96d7fe3e53e2",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "esd2junZbcqApzoB",
+          "name": "WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=751980964674283",
+        "recipientPhoneNumber": "+91 79895 85557",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        480,
+        256
+      ],
+      "id": "fff3216b-6741-4ea7-9a08-d278fe2dee4a",
+      "name": "Send message",
+      "webhookId": "183e72f3-f939-4ddc-8155-148c7ad51449",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "u2D1FVpiGhHl1mS5",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nreturn items.map((item) => {\n  let text = (item.json.output || \"\")\n    .replace(/^```json\\s*/i, \"\")\n    .replace(/```$/i, \"\")\n    .trim();\n  let json;\n  try {\n    json = JSON.parse(text);\n  } catch (e) {\n    json = {};\n  }\n  let nextStep = (json[\"Next Step\"] || \"consult doctor\").toLowerCase();\n  if (![\"self-care\", \"consult doctor\", \"emergency\"].includes(nextStep)) {\n    nextStep = \"consult doctor\";\n  }\n  let specialty =\n    nextStep === \"consult doctor\" ? json[\"Specialty\"] || \"General\" : undefined;\n  return {\n    json: {\n      \"Possible Conditions\": json[\"Possible Conditions\"] || [],\n      \"First Aid Advice\": json[\"First Aid Advice\"] || \"No advice available\",\n      \"Next Step\": nextStep,\n      ...(specialty ? { Specialty: specialty } : {}),\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        160
+      ],
+      "id": "d6f6fc3a-4034-489a-ae0c-6286af4abc79",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('AI Agent').item.json.output }}",
+        "contextWindowLength": "={{ 100 }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -984,
+        384
+      ],
+      "id": "9b6f3127-fbdc-4f65-82a1-9918b078b58a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role:\nYou are a healthcare assistant that guides patients when they need to consult a doctor.\n\nGoal:\nIf the next step is \"consult doctor\", send the following message to the patient.\n\nInstructions:\n- Do not translate the input.\n- Do not add extra commentary.\n- Insert the doctor’s phone number dynamically from the database.\n\nMessage Template:\nPossible Conditions: {{ $json[\"Possible Conditions\"] }}\nFirst Aid Advice: {{ $json[\"First Aid Advice\"] }}\nNext Step: {{ $json[\"Next Step\"] }}\n\nBased on your symptoms, you should consult a doctor. Choose one option:\n1️⃣ Call a doctor now: {{ $json[\"Doctor Phone\"] }}\n2️⃣ Book tele-consultation online\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        256
+      ],
+      "id": "994272cb-328a-4078-b24d-7abec538e632",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        200,
+        480
+      ],
+      "id": "3efacb85-c098-4932-a1c7-78df14508393",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4",
+          "mode": "list",
+          "cachedResultName": "Doctor DATA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "specialty",
+              "lookupValue": "={{ $json.Specialty }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -320,
+        256
+      ],
+      "id": "92a7be2b-7c97-4850-9ad4-136e1a3b8034",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Wi56Vgn7tEhfO9FI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "751980964674283",
+        "recipientPhoneNumber": "+917989585557",
+        "textBody": "={{ $json[\"Possible Conditions\"] }}\n{{ $json[\"First Aid Advice\"] }}\n{{ $json[\"Next Step\"] }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        64
+      ],
+      "id": "f8f6c687-ef1a-4a64-8940-61819f2437ba",
+      "name": "Send message1",
+      "webhookId": "cf9ed5d8-ac23-4380-aefa-b74249195202",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "u2D1FVpiGhHl1mS5",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $(\"Code in JavaScript\").all()[0]?.json;\nconst doctorData = $input.all()[0]?.json;\n\nreturn [\n  {\n    json: {\n      \"Possible Conditions\": aiOutput[\"Possible Conditions\"],\n      \"First Aid Advice\": aiOutput[\"First Aid Advice\"],\n      \"Next Step\": aiOutput[\"Next Step\"],\n      Specialty: aiOutput[\"Specialty\"],\n      \"Doctor Name\": doctorData[\"doctor_name\"],\n      \"Doctor Phone\": doctorData[\"phone_number\"],\n      \"Doctor Specialty\": doctorData[\"specialty\"],\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        256
+      ],
+      "id": "970e6f09-b563-441f-b82d-ed9ea7a4a2f8",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Decision: Consult Doctor?": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat recieved": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Decision: Consult Doctor?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b6c635f1-39c1-4ffa-9b70-b861eaf6e061",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe57ca6e9cbd2512b4f0b7e25d06057df4d1b3aca7e2f9ed5daad66e28a903"
+  },
+  "id": "rsxz4IFVXh1kmubA",
+  "tags": []
+}
