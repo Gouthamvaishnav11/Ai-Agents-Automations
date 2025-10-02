@@ -161,6 +161,70 @@ The structured event details are stored in Airtable as a record.
 This helps organizers pick the best idea from AI-generated suggestions with clear feasibility insights.
 <img width="1339" height="547" alt="image" src="https://github.com/user-attachments/assets/019ae887-0b80-4a9a-8b5c-78c3f5cd2e92" />
 
+---
+
+## 🩺 Patient Chat Automation Flow
+
+Chat Received (WhatsApp)
+
+A patient sends a message via WhatsApp.
+
+The message enters the workflow.
+
+AI Agent (Symptom Analysis - First Layer)
+
+Uses Google Gemini Chat Model to analyze the raw patient message.
+
+Converts it into a structured format (symptoms & details).
+
+AI Agent1 (Translation / Medical Understanding - Second Layer)
+
+Refines the message (e.g., symptom translation into medical terms).
+
+Stores short-term context using Simple Memory Model.
+
+Code in JavaScript
+
+Cleans the AI output.
+
+Converts it into a proper JSON format.
+
+Decision Node: "Consult Doctor?"
+
+Checks AI’s recommendation:
+
+false → Patient needs a doctor.
+
+true → No doctor needed, send simple advice.
+
+If "No Doctor Needed" (true branch)
+
+Send Message (WhatsApp) → Sends first-aid advice directly to the patient.
+
+If "Consult Doctor" (false branch)
+
+Get Row(s) in Sheet (Google Sheets DB)
+
+Fetches doctor details (specialty, phone number, emergency contacts).
+
+Code in JavaScript1
+
+Merges AI output + doctor data into a structured response.
+
+AI Agent2 (Message Formatting)
+
+Formats a patient-friendly message (next step + doctor options).
+
+Send Message (WhatsApp)
+
+Sends the final consultation options to the patient:
+1️⃣ Call doctor (phone number from sheet)
+2️⃣ Book tele-consultation
+3️⃣ Get nearest hospital info
+
+<img width="1695" height="534" alt="image" src="https://github.com/user-attachments/assets/dc9d27a1-2977-45de-9a4b-3677abd3d917" />
+
+
 
 
 
