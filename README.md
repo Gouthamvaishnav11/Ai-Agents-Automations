@@ -272,10 +272,16 @@ Collected feedback is analyzed for continuous event improvement.
 🌟 3️⃣ Why It’s Unique (USP Recap)
 USP	Description
 Smart Date-Based Automation (SDBA)	Sends the right message at the right time (before & after events).
+
 Personalized AI Communication (PAIC)	Emails sound human — no templates, fully tailored.
+
 End-to-End Workflow Integration (EEWI)	Uses Google Sheets → n8n → Gemini → Gmail.
+
 Real-Time Feedback Loop (RTFL)	Turns attendee feedback into actionable insights.
+
 Scalable & Reliable Design (SRD)	Works for 1 event or 100 events, no manual setup.
+
+
 📊 4️⃣ Value to Organizers
 
 ✅ Saves 80 % of time spent on attendee communication
