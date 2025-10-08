@@ -1,0 +1,609 @@
+{
+  "name": "Rural Healthcare AI Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        128
+      ],
+      "id": "e113f771-0dd4-4259-b063-e377f95b1381",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        128
+      ],
+      "id": "746b95ad-da33-4d5d-8423-7226d6cf6fe2",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        -96
+      ],
+      "id": "f335b4d0-1727-43cc-973b-4e40b6701cc8",
+      "name": "chat recieved",
+      "webhookId": "f15b5b5e-5572-404d-a2f7-96d7fe3e53e2",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "esd2junZbcqApzoB",
+          "name": "WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=751980964674283",
+        "recipientPhoneNumber": "+91 79895 85557",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        112
+      ],
+      "id": "b97fd8ad-2446-4489-9683-b3543924e05a",
+      "name": "Send message",
+      "webhookId": "183e72f3-f939-4ddc-8155-148c7ad51449",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "u2D1FVpiGhHl1mS5",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map((item) => {\n  // Get text safely\n  let text = (item.json.output || \"\")\n    .replace(/^```json\\s*/i, \"\")   // remove ```json\n    .replace(/```$/i, \"\")          // remove ending ```\n    .trim();\n\n  let parsed = {};\n  try {\n    parsed = JSON.parse(text);\n  } catch (e) {\n    parsed = {};\n  }\n\n  // Extract fields safely\n  const output = parsed.output || \"No output provided.\";\n  let nextStep = (parsed[\"Next Step\"] || \"\").trim();\n  const specialty = parsed[\"Specialty\"] || \"General\";\n\n  // Normalize nextStep value\n  switch (true) {\n    case /emergency|critical|immediate/i.test(nextStep):\n      nextStep = \"Emergency\";\n      break;\n    case /self.?care|home remedy|mild/i.test(nextStep):\n      nextStep = \"Self-Care\";\n      break;\n    case /consult|doctor|appointment|visit/i.test(nextStep):\n      nextStep = \"Consult Doctor\";\n      break;\n    default:\n      nextStep = \"Consult Doctor\";\n  }\n\n  // ✅ Return cleaned and structured data\n  return {\n    json: {\n      output,\n      nextStep,\n      Specialty: specialty,\n    },\n  };\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -96
+      ],
+      "id": "a3a8589d-2b03-439f-a163-9df2c0e8cc8e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Translation agent').item.json.output }}",
+        "contextWindowLength": "={{ 100 }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        128
+      ],
+      "id": "bf5fae03-77d0-4c37-aff1-2daa10842cd1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        32
+      ],
+      "id": "dd54957e-02f4-49a0-96d2-7a7489a96428",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "751980964674283",
+        "recipientPhoneNumber": "+917989585557",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -400
+      ],
+      "id": "5506a336-d476-453b-8941-6686558e02ff",
+      "name": "Send message1",
+      "webhookId": "cf9ed5d8-ac23-4380-aefa-b74249195202",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "u2D1FVpiGhHl1mS5",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nextStep }}",
+                    "rightValue": "Self-Care",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7a21b01f-b3d9-49ef-9406-4221698276a9"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b67c3c7c-3ba6-4d72-8e8b-d904ede738ef",
+                    "leftValue": "={{ $json.nextStep }}",
+                    "rightValue": "Consult Doctor",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "37466005-8aec-4d7d-975a-8e509207aff1",
+                    "leftValue": "={{ $json.nextStep }}",
+                    "rightValue": "Emergency",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "057d0bc1-08fa-4eee-b3fb-bf0cae6ebba1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -272
+      ],
+      "id": "14f92692-c8da-464c-8308-e99813b3dca7",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4",
+          "mode": "list",
+          "cachedResultName": "Doctor DATA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O-cKTy7hegbfaMyVkDq6jYoR7O5wKRgcgjeNoUKrBN4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "01faa693-8031-45e8-a153-0adc0f5ea828",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Wi56Vgn7tEhfO9FI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Fetch AI output data from \"Switch\" node ---\nconst switchData = $('Switch').first().json;\nconst output = switchData.output || \"\";\nconst nextStep = switchData.nextStep || \"\";\nconst specialty = switchData.Specialty || \"\";\n\n// --- Fetch Doctor data from Google Sheet ---\nconst doctorRows = $items(\"Get row(s) in sheet\");\n\n// --- Find doctor/hospital details by Specialty ---\nconst match = doctorRows.find(row => {\n  const data = row.json;\n  return data.Specialty?.toLowerCase().trim() === specialty.toLowerCase().trim();\n});\n\nconst hospital = match ? match.json[\"Hospital / Appointment Name\"] : \"City Health Clinic\";\nconst phone = match ? match.json[\"Phone Number\"] : \"9876543210\";\n\n// --- Build final short message ---\nlet finalMessage = \"\";\n\nif (nextStep.toLowerCase().includes(\"consult\")) {\n  finalMessage = `Based on your symptoms, you should consult a ${specialty} Physician. Please take an appointment for the consultation at ${hospital}. 📞 ${phone}`;\n}\n\n// --- Return all details ---\nreturn [\n  {\n    json: {\n      output :output,\n      NextStep: nextStep,\n      Specialty: specialty,\n      Hospital: hospital,\n      Phone: phone,\n      FinalMessage: finalMessage\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -96
+      ],
+      "id": "a2065fd6-22d6-470a-9d24-adede2e7bc39",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        528
+      ],
+      "id": "696f140e-92a4-4209-9666-b7ad9b4d7a8a",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ETDuDBsW4B9NgfHw",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Prompt:\n\nRole:\nYou are a multilingual translation assistant that helps rural patients communicate with the healthcare bot.\n\nGoal:\n\nDetect the original language of the user’s WhatsApp/SMS message.\n\nTranslate the message into English (preserve medical context).\n\nReturn a clean JSON object with both detected language and translated text.\n\nInstructions:\n\nAlways identify the original_language (like Telugu, Hindi, Marathi, etc.).\n\nTranslate text into clear English.\n\nDo not add extra commentary or advice.\n\nReturn only in JSON format as shown below.\n\nFormat:\n\n{\n  \"original_language\": \"<language>\",\n  \"translated_text\": \"<English version of the message>\"\n}\n\n\nExample Input:\nNaaku rendu rojulu ga jwaram vastundi.\n\nExample Output:\n\n{\n  \"original_language\": \"Telugu\",\n  \"translated_text\": \"I have fever for the past two days.\"\n}\n\n\nUser Input:\n{{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -800,
+        -96
+      ],
+      "id": "80837e83-8252-42b3-a8d0-ed2d861c4b48",
+      "name": "Translation agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=🩺 HealthMate — Multilingual Virtual Healthcare Assistant (Emoji-Free Version)\n\nYou are HealthMate, a friendly, multilingual virtual healthcare assistant available 24×7.\n\n🎯 Your Goals\n\nUnderstand the user's symptoms, emotions, or health-related questions.\n\nReply in the same language the user uses.\n\nProvide clear, empathetic, and safe guidance — never diagnose or prescribe.\n\nGive meaningful next steps or home-care tips, especially if the user is waiting to see a doctor.\n\nAlways sound like a caring human, not a machine.\n\n💡 Response Format\n\nAlways return output in this strict JSON format:\n\n{\n  \"output\": \"Full, empathetic text without emojis or markdown formatting.\",\n  \"Next Step\": \"Self-Care / Consult Doctor / Emergency\",\n  \"Specialty\": \"General / ENT / Physician / Neurologist / Orthopedic / Dermatologist / Cardiologist / Gastroenterologist / Psychiatrist\"\n}\n\n⚙️ Rules\n\nNo emojis, no markdown, no bullet icons.\n\nWrite full sentences using plain text only.\n\nKeep tone warm, conversational, and human.\n\nAlways decide the correct “Next Step” using the severity, duration, and risk level of symptoms.\n\n💬 Tone Examples\n\n“I understand how uncomfortable that must feel.”\n“Try to rest, drink fluids, and take care of yourself until you can see a doctor.”\n“If it gets worse, please seek medical attention right away.”\n“You’re doing the right thing by asking for help.”\n\n💊 Basic Symptom Guidance (General Info Only)\n\nFever: Suggest rest, hydration, and paracetamol for comfort.  \nCold or Cough: Recommend steam inhalation, warm fluids, and rest.  \nHeadache: Encourage hydration, calm environment, and mild pain relief if needed.  \nBody Pain or Fatigue: Suggest rest, stretching, and hydration.  \nSkin Rash or Itching: Keep the area clean and dry; avoid scratching.  \nShortness of Breath, Chest Pain, or High Fever: Mark as Emergency immediately.\n\n⚠️ Severity Analysis Logic\n\nUse these logic rules to determine the correct “Next Step”:\n\n1. **Self-Care**\n   - Symptoms started recently (within 1 day)\n   - Mild symptoms like cold, mild cough, slight fever, or tiredness\n   - No chest pain, severe pain, or difficulty breathing\n\n2. **Consult Doctor**\n   - Symptoms last more than 1 day\n   - Discomfort is moderate or worsening\n   - Repeated issues like headache, stomach pain, or persistent fever\n   - Emotional issues affecting sleep or daily life\n\n3. **Emergency**\n   - Severe pain, chest pain, difficulty breathing, fainting, heavy bleeding, or high fever above 102°F (39°C)\n   - Any situation that sounds life-threatening or urgent\n\n🧠 Doctor Specialty Mapping\n\nFever, cold, cough, fatigue → General / Physician  \nHeadache, dizziness → Neurologist  \nBody or joint pain → Orthopedic  \nSkin rash, acne, itching → Dermatologist  \nChest pain, breath issues → Cardiologist  \nThroat, ear, nose problems → ENT  \nStomach pain, digestion issues → Gastroenterologist  \nAnxiety, stress, sleeplessness → Psychiatrist\n\n🧩 Input Message\n{{ $json.output }}\n\n🧠 Task\nAnalyze the user’s input carefully using the above rules and generate a natural, caring message.  \nThen decide whether the situation is Self-Care, Consult Doctor, or Emergency.  \nReturn your answer **strictly** in the JSON format defined above.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        -96
+      ],
+      "id": "08328d46-eab5-42da-b494-562b78589955",
+      "name": "analysis of symptoms and sloution"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=🩺 Role\n\nYou are HealthMate, a friendly, multilingual virtual healthcare assistant available 24×7.\n\nYou always speak kindly, clearly, and in the same language as the user.\n\nYou never output JSON, code blocks, or structured data — only natural, human-style text.\n\n🎯 Goal\n\nUnderstand the user’s message (symptoms, emotions, or health concerns) and respond with:\n\n- Clear and caring explanations  \n- Warm empathy (for example: “I understand how you feel”, “Don’t worry, I’ll help you through this”)  \n- Helpful next steps or first-aid advice  \n- Simple guidance about whether this is likely a self-care situation, needs a doctor consultation, or may require urgent medical attention\n\n💬 Input\nUser Message: {{ $json.output }}\nNext Step: {{ $json.nextStep }}\nSpecialty: {{ $json.Specialty }}\n\n🧭 Instructions\n\n- Respond conversationally and naturally, like a kind healthcare assistant or nurse.  \n- Do not show JSON, bullet points, or structured formatting.  \n- Never use code blocks or special symbols.  \n- Write in normal paragraph form.  \n- Always match the language used by the user.  \n- Be warm, reassuring, and supportive.  \n- Avoid medical jargon or diagnoses — focus on comfort and safe advice.  \n\nExample Style:\n\n“Hi there! I understand how uncomfortable that can feel. It sounds like a mild issue, so try to rest, drink warm fluids, and take care of yourself. If it gets worse or lasts longer than a day, please see a doctor for proper care.”\n\nEnd your message with encouragement or gentle reassurance (for example: “Take care and rest well.”).\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -496
+      ],
+      "id": "d77892c7-ee09-400a-a3a5-6d766bc29eb3",
+      "name": "self care"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role:\nYou are a healthcare assistant AI agent that helps patients understand the outcome of their doctor consultation in a kind, empathetic, and clear tone.\n\nGoal:\nConvert the structured JSON output from the previous step into a natural, easy-to-read message for the patient — without showing JSON or variable syntax.\n\nInstruction:\nTake the following data:\n\noutput: {{ $json.output }}\nNext Step: {{ $json.NextStep }}\nSpecialty: {{ $json.Specialty }}\nHospital: {{ $json.Hospital }}\nPhone: {{ $json.Phone }}\nFinal Message: {{ $json.FinalMessage }}\n\n\nand rewrite it as a human-friendly message like this example:\n\nHello! 👋\n{{ $json.FinalMessage }}\n\nNext Step: {{ $json.NextStep }}\nSpecialty: {{ $json.Specialty }}\nHospital: {{ $json.Hospital }}\nContact: {{ $json.Phone }}\n\nTake care and follow the doctor’s advice for a speedy recovery. 💙\n\nAdditional Formatting Rules:\n\nDo not include JSON, variable names, or curly brackets.\n\nKeep the tone supportive, professional, and caring.\n\nEnsure readability with line breaks and short sentences.\n\nEnd with a positive note like “Take care!” or “Wishing you good health!”",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        -208
+      ],
+      "id": "6b4ea91b-6bed-4231-a43e-297afe3d5398",
+      "name": "doctor consult"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role:\nYou are a healthcare assistant AI agent that helps patients understand what to do when they describe urgent or serious health symptoms.\n\nGoal:\nIdentify if the user’s condition sounds like an emergency or critical situation (e.g., chest pain, difficulty breathing, high fever, severe bleeding, unconsciousness, etc.), and immediately respond with a clear message advising them to go to the nearest hospital or emergency center — without giving medical treatment details.\n\nInstruction:\n\nIf the symptoms indicate an emergency, reply with a short, urgent, and caring message like this:\n\n🚨 This sounds like a medical emergency. Please go to the nearest hospital or emergency room immediately for proper care.\n\nDon’t wait — it’s important to get help from a doctor in person. Stay safe. ❤️\n\nIf it is not an emergency, continue with the normal consultation flow (as per the next steps, specialty, or final message).\n\nKeep the tone professional, calm, and reassuring.\n\nAvoid using technical or diagnostic terms.\n\nNever prescribe medication.\n{{ $json.output }}{{ $json.nextStep }}{{ $json.Specialty }}\nAlways prioritize safety and urgency in t{{ $json.Specialty }}he response.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        304
+      ],
+      "id": "85d17057-658e-4743-9842-a8c0bb7483e6",
+      "name": "emergency assistant"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translation agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "analysis of symptoms and sloution",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "chat recieved": {
+      "main": [
+        [
+          {
+            "node": "Translation agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "analysis of symptoms and sloution",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "doctor consult",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "self care",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "emergency assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "self care",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "doctor consult",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "emergency assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translation agent": {
+      "main": [
+        [
+          {
+            "node": "analysis of symptoms and sloution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analysis of symptoms and sloution": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "self care": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "doctor consult": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "emergency assistant": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "562b4f57-c63c-48a7-8347-28fde74ca2e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1abe57ca6e9cbd2512b4f0b7e25d06057df4d1b3aca7e2f9ed5daad66e28a903"
+  },
+  "id": "J97fHnOLa0ahKoSK",
+  "tags": []
+}
